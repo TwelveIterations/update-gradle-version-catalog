@@ -7,11 +7,11 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import * as catalog from '../__fixtures__/catalog.js'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
+jest.unstable_mockModule('../src/catalog.js', () => catalog)
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
@@ -20,43 +20,80 @@ const { run } = await import('../src/main.js')
 describe('main.ts', () => {
   beforeEach(() => {
     // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
+    core.getInput.mockImplementation((name: string) => {
+      const inputs: Record<string, string> = {
+        target: 'kotlin',
+        target_type: 'ref',
+        version: '1.9.20',
+        section: 'versions'
+      }
+      return inputs[name] || ''
+    })
 
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
+    // Mock the catalog function to return a successful update.
+    catalog.updateCatalogVersion.mockResolvedValue({
+      oldVersion: '1.9.10',
+      version: '1.9.20'
+    })
   })
 
   afterEach(() => {
     jest.resetAllMocks()
   })
 
-  it('Sets the time output', async () => {
+  it('Sets the updated output to true when version changes', async () => {
     await run()
 
-    // Verify the time output was set.
-    expect(core.setOutput).toHaveBeenNthCalledWith(
-      1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
-    )
+    // Verify the updated output was set to true.
+    expect(core.setOutput).toHaveBeenNthCalledWith(1, 'updated', true)
+    expect(core.setOutput).toHaveBeenNthCalledWith(2, 'version', '1.9.20')
   })
 
-  it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
+  it('Sets the updated output to false when version stays the same', async () => {
+    catalog.updateCatalogVersion.mockResolvedValue({
+      oldVersion: '1.9.10',
+      version: '1.9.10'
+    })
 
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+    await run()
+
+    // When oldVersion === newVersion, updated should be false
+    expect(core.setOutput).toHaveBeenNthCalledWith(1, 'updated', false)
+    expect(core.setOutput).toHaveBeenNthCalledWith(2, 'version', '1.9.10')
+  })
+
+  it('Sets the updated output to false when version does not change (undefined)', async () => {
+    catalog.updateCatalogVersion.mockResolvedValue({
+      oldVersion: '1.9.10',
+      version: undefined
+    })
+
+    await run()
+
+    // When version is undefined, no update occurred
+    expect(core.setOutput).toHaveBeenNthCalledWith(1, 'updated', false)
+    expect(core.setOutput).toHaveBeenNthCalledWith(2, 'version', '1.9.10')
+  })
+
+  it('Sets a failed status when catalog update throws error', async () => {
+    const errorMessage = 'target not found'
+    catalog.updateCatalogVersion.mockRejectedValueOnce(new Error(errorMessage))
 
     await run()
 
     // Verify that the action was marked as failed.
-    expect(core.setFailed).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds is not a number'
-    )
+    expect(core.setFailed).toHaveBeenNthCalledWith(1, errorMessage)
+  })
+
+  it('Calls updateCatalogVersion with correct parameters', async () => {
+    await run()
+
+    // Verify the catalog function was called with the correct parameters.
+    expect(catalog.updateCatalogVersion).toHaveBeenCalledWith({
+      target: 'kotlin',
+      targetType: 'ref',
+      version: '1.9.20',
+      section: 'versions'
+    })
   })
 })

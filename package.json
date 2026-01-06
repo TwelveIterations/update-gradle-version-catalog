@@ -1,17 +1,17 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
-  "version": "0.0.0",
+  "name": "update-gradle-version-catalog",
+  "description": "Updates a Gradle version catalog with the given inputs",
+  "version": "1.0.0",
   "author": "",
   "type": "module",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/TwelveIterations/update-gradle-version-catalog",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/TwelveIterations/update-gradle-version-catalog.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/TwelveIterations/update-gradle-version-catalog/issues"
   },
   "keywords": [
     "actions"
@@ -37,7 +37,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "smol-toml": "^1.6.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1.4.0",

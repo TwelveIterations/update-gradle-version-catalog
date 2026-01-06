@@ -1,24 +1,37 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: 'Update Gradle Version Catalog'
+description: Updates the Gradle version catalog
+author: Twelve Iterations
 
-# Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: heart
   color: red
 
-# Define your inputs here.
 inputs:
-  milliseconds:
-    description: Your input description here
+  target:
+    description: The target to update
+    type: string
     required: true
-    default: '1000'
+  target_type:
+    description: Either "ref" or "module". Omit to infer from target.
+    type: string
+    required: false
+  version:
+    description: The version to update to
+    type: string
+    required: false
+  section:
+    description:
+      The section to search and replace in (e.g. "versions", "libraries", or
+      "plugins"). Omit to infer from target.
+    type: string
+    required: false
 
-# Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
+  version:
+    description: The version of the target
+  updated:
+    description: Whether the version has changed
 
 runs:
-  using: node24
+  using: node20
   main: dist/index.js

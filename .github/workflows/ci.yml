@@ -57,8 +57,11 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
+          artifact: 'net.neoforged.moddev'
+          version: '2.0.107'
 
       - name: Print Output
         id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+        run: |
+          echo "${{ steps.test-action.outputs.updated }}"
+          echo "${{ steps.test-action.outputs.version }}"
