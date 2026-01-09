@@ -1,7 +1,12 @@
 import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { replaceVersionRef, replaceInlineVersion, replaceShortNotation, parseShortNotation } from '../src/catalog.js'
+import {
+  replaceVersionRef,
+  replaceInlineVersion,
+  replaceShortNotation,
+  parseShortNotation
+} from '../src/catalog.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const fixturesDir = path.join(__dirname, '..', '__fixtures__')
@@ -326,18 +331,35 @@ kotlinRef = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin"
     })
 
     it('replaces inline version versions', () => {
-      const result = replaceInlineVersion(sharedTestInput, 'kotlinInline', '1.10.0')
-      expect(result).toContain('kotlinInline = { module = "org.jetbrains.kotlin:kotlin-bom", version = "1.10.0" }')
+      const result = replaceInlineVersion(
+        sharedTestInput,
+        'kotlinInline',
+        '1.10.0'
+      )
+      expect(result).toContain(
+        'kotlinInline = { module = "org.jetbrains.kotlin:kotlin-bom", version = "1.10.0" }'
+      )
     })
 
     it('replaces short notation versions', () => {
-      const result = replaceShortNotation(sharedTestInput, 'kotlinShort', '1.10.0')
-      expect(result).toContain('kotlinShort = "org.jetbrains.kotlin:kotlin-bom:1.10.0"')
+      const result = replaceShortNotation(
+        sharedTestInput,
+        'kotlinShort',
+        '1.10.0'
+      )
+      expect(result).toContain(
+        'kotlinShort = "org.jetbrains.kotlin:kotlin-bom:1.10.0"'
+      )
     })
 
     it('parses short notation', () => {
-      const result = parseShortNotation('org.jetbrains.kotlin:kotlin-bom:1.9.20')
-      expect(result).toEqual({ module: 'org.jetbrains.kotlin:kotlin-bom', version: '1.9.20' })
+      const result = parseShortNotation(
+        'org.jetbrains.kotlin:kotlin-bom:1.9.20'
+      )
+      expect(result).toEqual({
+        module: 'org.jetbrains.kotlin:kotlin-bom',
+        version: '1.9.20'
+      })
     })
   })
 })

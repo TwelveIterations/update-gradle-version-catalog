@@ -1,7 +1,9 @@
 import { parse } from 'smol-toml'
 import fs from 'fs/promises'
 
-type LibraryEntry = string | { module: string; version: string | { ref: string } }
+type LibraryEntry =
+  | string
+  | { module: string; version: string | { ref: string } }
 type PluginEntry = { id: string; version: string | { ref: string } }
 
 type VersionCatalog = {
@@ -10,12 +12,13 @@ type VersionCatalog = {
   plugins: Record<string, PluginEntry>
 }
 
-export function replaceVersionRef(content: string, ref: string, newVersion: string): string {
+export function replaceVersionRef(
+  content: string,
+  ref: string,
+  newVersion: string
+): string {
   // Match version ref format: ref = "version"
-  const pattern = new RegExp(
-    `(^${ref}\\s*=\\s*")([^"]*)(")`,
-    'm'
-  )
+  const pattern = new RegExp(`(^${ref}\\s*=\\s*")([^"]*)(")`, 'm')
   return content.replace(pattern, `$1${newVersion}$3`)
 }
 
@@ -45,7 +48,9 @@ export function replaceShortNotation(
   return content.replace(shortPattern, `$1${newVersion}$3`)
 }
 
-export function parseShortNotation(value: string): { module: string; version: string } | null {
+export function parseShortNotation(
+  value: string
+): { module: string; version: string } | null {
   const parts = value.split(':')
   if (parts.length === 3) {
     return {
@@ -97,7 +102,11 @@ export async function updateCatalogVersion(options: {
         const e = catalog.libraries[k]
         if (typeof e === 'string') {
           const parsed = parseShortNotation(e)
-          return parsed && (parsed.module === library || parsed.module.startsWith(library + ':'))
+          return (
+            parsed &&
+            (parsed.module === library ||
+              parsed.module.startsWith(library + ':'))
+          )
         }
         return e.module === library || e.module.startsWith(library + ':')
       })
