@@ -7,7 +7,7 @@ type VersionCatalog = {
     string,
     { module: string; version: string | { ref: string } }
   >
-  plugins: Record<string, { module: string; version: string | { ref: string } }>
+  plugins: Record<string, { id: string; version: string | { ref: string } }>
 }
 
 function updateModuleVersion(
@@ -82,7 +82,7 @@ export async function updateCatalogVersion(options: {
     let entry = catalog.plugins?.[plugin]
     if (!entry) {
       const key = Object.keys(catalog.plugins ?? {}).find(
-        (k) => catalog.plugins[k].module === plugin
+        (k) => catalog.plugins[k].id === plugin
       )
       if (key) entry = catalog.plugins[key]
     }

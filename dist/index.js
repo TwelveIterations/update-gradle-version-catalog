@@ -28365,7 +28365,7 @@ async function updateCatalogVersion(options) {
     else if (plugin) {
         let entry = catalog.plugins?.[plugin];
         if (!entry) {
-            const key = Object.keys(catalog.plugins ?? {}).find((k) => catalog.plugins[k].module === plugin);
+            const key = Object.keys(catalog.plugins ?? {}).find((k) => catalog.plugins[k].id === plugin);
             if (key)
                 entry = catalog.plugins[key];
         }
