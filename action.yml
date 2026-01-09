@@ -43,7 +43,7 @@ outputs:
   version:
     description: The version of the target
   updated:
-    description: Whether the version has changed
+    description: Whether the version was changed
 
 runs:
   using: node20

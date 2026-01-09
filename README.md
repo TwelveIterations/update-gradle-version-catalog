@@ -15,6 +15,25 @@ with:
   version: '2.0.107'
 ```
 
+## Inputs
+
+| Input | Description | Required | Default |
+|-------|-------------|----------|---------|
+| `ref` | The version reference to update (from the [versions] section). Either ref, library, or plugin must be specified. | false | - |
+| `library` | The library to update (from the [libraries] section). Either ref, library, or plugin must be specified. | false | - |
+| `plugin` | The plugin to update (from the [plugins] section). Either ref, library, or plugin must be specified. | false | - |
+| `version` | The version to update to. If not specified, the current version will be returned. | false | - |
+| `catalog` | The path to the Gradle version catalog file. | false | `gradle/libs.versions.toml` |
+
+**Note:** Exactly one of `ref`, `library`, or `plugin` must be specified.
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `version` | The version of the target |
+| `updated` | Whether the version was changed |
+
 ## Development
 
 After you've cloned the repository to your local machine or codespace, you'll
