@@ -70,7 +70,10 @@ export async function updateCatalogVersion(options: {
     let entry = catalog.libraries?.[library]
     if (!entry) {
       const key = Object.keys(catalog.libraries ?? {}).find(
-        (k) => catalog.libraries[k].module === library
+        (k) => {
+          const module = catalog.libraries[k].module
+          return module === library || module.startsWith(library + ':')
+        }
       )
       if (key) entry = catalog.libraries[key]
     }
