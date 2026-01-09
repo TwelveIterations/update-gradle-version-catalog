@@ -7,22 +7,28 @@ branding:
   color: red
 
 inputs:
-  target:
-    description: The target to update
+  ref:
+    description:
+      The version reference to update (from the [versions] section). Either ref,
+      library, or plugin must be specified.
     type: string
-    required: true
-  target_type:
-    description: Either "ref" or "module". Omit to infer from target.
+    required: false
+  library:
+    description:
+      The library to update (from the [libraries] section). Either ref, library,
+      or plugin must be specified.
+    type: string
+    required: false
+  plugin:
+    description:
+      The plugin to update (from the [plugins] section). Either ref, library, or
+      plugin must be specified.
     type: string
     required: false
   version:
-    description: The version to update to
-    type: string
-    required: false
-  section:
     description:
-      The section to search and replace in (e.g. "versions", "libraries", or
-      "plugins"). Omit to infer from target.
+      The version to update to. If not specified, the current version will be
+      returned.
     type: string
     required: false
 

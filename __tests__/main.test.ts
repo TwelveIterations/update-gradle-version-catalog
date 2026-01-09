@@ -22,10 +22,8 @@ describe('main.ts', () => {
     // Set the action's inputs as return values from core.getInput().
     core.getInput.mockImplementation((name: string) => {
       const inputs: Record<string, string> = {
-        target: 'kotlin',
-        target_type: 'ref',
-        version: '1.9.20',
-        section: 'versions'
+        ref: 'kotlin',
+        version: '1.9.20'
       }
       return inputs[name] || ''
     })
@@ -90,10 +88,10 @@ describe('main.ts', () => {
 
     // Verify the catalog function was called with the correct parameters.
     expect(catalog.updateCatalogVersion).toHaveBeenCalledWith({
-      target: 'kotlin',
-      targetType: 'ref',
-      version: '1.9.20',
-      section: 'versions'
+      ref: 'kotlin',
+      library: undefined,
+      plugin: undefined,
+      version: '1.9.20'
     })
   })
 })

@@ -8,35 +8,11 @@
 
 ## Usage
 
-### Basic Usage
-
 ```yaml
 uses: TwelveIterations/update-gradle-version-catalog@v1
-  with:
-    target: 'com.example:library'
-    version: '1.2.3'
-```
-
-### Advanced Usage
-
-```yaml
-- name: Update Gradle Version Catalog
-  uses: TwelveIterations/update-gradle-version-catalog@v1
-  with:
-    # Required: The target to update (module name or Git reference)
-    target: 'com.example:library'
-    
-    # Optional: Specify target type ("ref" or "module")
-    # If omitted, will be inferred from the target
-    target_type: 'module'
-    
-    # Optional: Version to update to
-    # If omitted, will only read and return the current version
-    version: '1.2.3'
-    
-    # Optional: Section to search in ("versions", "libraries", or "plugins")
-    # If omitted, will be inferred from the target
-    section: 'libraries'
+with:
+  plugin: 'net.neoforged.moddev' # or library, or ref
+  version: '2.0.107'
 ```
 
 ## Development

@@ -57,7 +57,7 @@ jobs:
         id: test-action
         uses: ./
         with:
-          artifact: 'net.neoforged.moddev'
+          plugin: 'net.neoforged.moddev'
           version: '2.0.107'
 
       - name: Print Output

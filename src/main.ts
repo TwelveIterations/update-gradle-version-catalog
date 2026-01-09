@@ -8,15 +8,24 @@ import { updateCatalogVersion } from './catalog.js'
  */
 export async function run(): Promise<void> {
   try {
-    const target: string = core.getInput('target')
-    const targetType: string = core.getInput('target_type')
+    const ref: string = core.getInput('ref')
+    const library: string = core.getInput('library')
+    const plugin: string = core.getInput('plugin')
     const version: string = core.getInput('version')
-    const section: string = core.getInput('section')
+
+    const providedInputs = [ref, library, plugin].filter(Boolean)
+    if (providedInputs.length === 0) {
+      throw new Error('One of ref, library, or plugin must be provided')
+    }
+    if (providedInputs.length > 1) {
+      throw new Error('Only one of ref, library, or plugin can be provided')
+    }
+
     const { oldVersion, version: newVersion } = await updateCatalogVersion({
-      target,
-      targetType,
-      version,
-      section
+      ref: ref || undefined,
+      library: library || undefined,
+      plugin: plugin || undefined,
+      version: version || undefined
     })
     const wasUpdated = newVersion !== undefined && newVersion !== oldVersion
     core.setOutput('updated', wasUpdated)

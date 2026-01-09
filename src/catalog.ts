@@ -33,33 +33,15 @@ function updateModuleVersion(
 }
 
 export async function updateCatalogVersion(options: {
-  target?: string
-  targetType?: string
+  ref?: string
+  library?: string
+  plugin?: string
   version?: string
-  section?: string
 }): Promise<{ oldVersion: string; version?: string }> {
-  const { version, target, targetType, section } = options
-  if (!target || typeof target !== 'string') {
-    throw new Error('target is not a string')
-  }
-  if (targetType && typeof targetType !== 'string') {
-    throw new Error('target_type is not a string')
-  }
-  if (targetType && targetType !== 'ref' && targetType !== 'module') {
-    throw new Error('target_type is not a valid target type')
-  }
+  const { ref, library, plugin, version } = options
+
   if (version && typeof version !== 'string') {
     throw new Error('version is not a string')
-  }
-  if (!section || typeof section !== 'string') {
-    throw new Error('section is not a string')
-  }
-  if (
-    section !== 'versions' &&
-    section !== 'libraries' &&
-    section !== 'plugins'
-  ) {
-    throw new Error('section is not a valid section')
   }
 
   const catalogContent = await fs.readFile('gradle/libs.versions.toml', {
@@ -67,50 +49,42 @@ export async function updateCatalogVersion(options: {
   })
   const catalog = parse(catalogContent) as VersionCatalog
 
-  const defaultSections = ['versions', 'libraries', 'plugins'] as const
-  const searchSections = (
-    section ? [section, ...defaultSections] : defaultSections
-  ) as (typeof defaultSections)[number][]
   let oldVersion: string | undefined
-  outer: for (const searchSection of searchSections) {
-    if (!catalog[searchSection]) {
-      continue
-    }
 
-    if (
-      (!targetType || targetType === 'ref') &&
-      catalog[searchSection][target]
-    ) {
-      if (searchSection === 'versions') {
-        oldVersion = catalog[searchSection][target]
-        if (version) {
-          catalog[searchSection][target] = version
-        }
-        break outer
-      } else {
-        oldVersion = updateModuleVersion(
-          catalog,
-          catalog[searchSection][target],
-          version
-        )
-        break outer
-      }
-    } else if (targetType === 'module' && searchSection !== 'versions') {
-      for (const key of Object.keys(catalog[searchSection])) {
-        if (catalog[searchSection][key].module === target) {
-          oldVersion = updateModuleVersion(
-            catalog,
-            catalog[searchSection][key],
-            version
-          )
-          break outer
-        }
-      }
+  if (ref) {
+    if (!catalog.versions?.[ref]) {
+      throw new Error(`ref '${ref}' not found in [versions] section`)
     }
-  }
-
-  if (!oldVersion) {
-    throw new Error('target not found')
+    oldVersion = catalog.versions[ref]
+    if (version) {
+      catalog.versions[ref] = version
+    }
+  } else if (library) {
+    let entry = catalog.libraries?.[library]
+    if (!entry) {
+      const key = Object.keys(catalog.libraries ?? {}).find(
+        (k) => catalog.libraries[k].module === library
+      )
+      if (key) entry = catalog.libraries[key]
+    }
+    if (!entry) {
+      throw new Error(`library '${library}' not found in [libraries] section`)
+    }
+    oldVersion = updateModuleVersion(catalog, entry, version)
+  } else if (plugin) {
+    let entry = catalog.plugins?.[plugin]
+    if (!entry) {
+      const key = Object.keys(catalog.plugins ?? {}).find(
+        (k) => catalog.plugins[k].module === plugin
+      )
+      if (key) entry = catalog.plugins[key]
+    }
+    if (!entry) {
+      throw new Error(`plugin '${plugin}' not found in [plugins] section`)
+    }
+    oldVersion = updateModuleVersion(catalog, entry, version)
+  } else {
+    throw new Error('One of ref, library, or plugin must be provided')
   }
 
   await fs.writeFile('gradle/libs.versions.toml', stringify(catalog))
