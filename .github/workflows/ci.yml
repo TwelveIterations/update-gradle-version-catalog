@@ -57,6 +57,7 @@ jobs:
         id: test-action
         uses: ./
         with:
+          catalog: '__fixtures__/libs.versions.toml'
           plugin: 'net.neoforged.moddev'
           version: '2.0.107'
 

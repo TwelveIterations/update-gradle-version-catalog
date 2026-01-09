@@ -91,7 +91,8 @@ describe('main.ts', () => {
       ref: 'kotlin',
       library: undefined,
       plugin: undefined,
-      version: '1.9.20'
+      version: '1.9.20',
+      catalog: 'gradle/libs.versions.toml'
     })
   })
 })

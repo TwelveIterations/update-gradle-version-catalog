@@ -28332,11 +28332,11 @@ function updateModuleVersion(catalog, entry, version) {
     throw new Error('Invalid version structure');
 }
 async function updateCatalogVersion(options) {
-    const { ref, library, plugin, version } = options;
+    const { ref, library, plugin, version, catalog: catalogPath = 'gradle/libs.versions.toml' } = options;
     if (version && typeof version !== 'string') {
         throw new Error('version is not a string');
     }
-    const catalogContent = await fs.readFile('gradle/libs.versions.toml', {
+    const catalogContent = await fs.readFile(catalogPath, {
         encoding: 'utf-8'
     });
     const catalog = parse(catalogContent);
@@ -28377,7 +28377,7 @@ async function updateCatalogVersion(options) {
     else {
         throw new Error('One of ref, library, or plugin must be provided');
     }
-    await fs.writeFile('gradle/libs.versions.toml', stringify(catalog));
+    await fs.writeFile(catalogPath, stringify(catalog));
     return { oldVersion, version };
 }
 
@@ -28392,6 +28392,7 @@ async function run() {
         const library = coreExports.getInput('library');
         const plugin = coreExports.getInput('plugin');
         const version = coreExports.getInput('version');
+        const catalog = coreExports.getInput('catalog');
         const providedInputs = [ref, library, plugin].filter(Boolean);
         if (providedInputs.length === 0) {
             throw new Error('One of ref, library, or plugin must be provided');
@@ -28403,7 +28404,8 @@ async function run() {
             ref: ref || undefined,
             library: library || undefined,
             plugin: plugin || undefined,
-            version: version || undefined
+            version: version || undefined,
+            catalog: catalog || 'gradle/libs.versions.toml'
         });
         const wasUpdated = newVersion !== undefined && newVersion !== oldVersion;
         coreExports.setOutput('updated', wasUpdated);

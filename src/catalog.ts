@@ -37,14 +37,21 @@ export async function updateCatalogVersion(options: {
   library?: string
   plugin?: string
   version?: string
+  catalog?: string
 }): Promise<{ oldVersion: string; version?: string }> {
-  const { ref, library, plugin, version } = options
+  const {
+    ref,
+    library,
+    plugin,
+    version,
+    catalog: catalogPath = 'gradle/libs.versions.toml'
+  } = options
 
   if (version && typeof version !== 'string') {
     throw new Error('version is not a string')
   }
 
-  const catalogContent = await fs.readFile('gradle/libs.versions.toml', {
+  const catalogContent = await fs.readFile(catalogPath, {
     encoding: 'utf-8'
   })
   const catalog = parse(catalogContent) as VersionCatalog
@@ -87,6 +94,6 @@ export async function updateCatalogVersion(options: {
     throw new Error('One of ref, library, or plugin must be provided')
   }
 
-  await fs.writeFile('gradle/libs.versions.toml', stringify(catalog))
+  await fs.writeFile(catalogPath, stringify(catalog))
   return { oldVersion, version }
 }

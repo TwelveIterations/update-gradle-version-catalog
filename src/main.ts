@@ -12,6 +12,7 @@ export async function run(): Promise<void> {
     const library: string = core.getInput('library')
     const plugin: string = core.getInput('plugin')
     const version: string = core.getInput('version')
+    const catalog: string = core.getInput('catalog')
 
     const providedInputs = [ref, library, plugin].filter(Boolean)
     if (providedInputs.length === 0) {
@@ -25,7 +26,8 @@ export async function run(): Promise<void> {
       ref: ref || undefined,
       library: library || undefined,
       plugin: plugin || undefined,
-      version: version || undefined
+      version: version || undefined,
+      catalog: catalog || 'gradle/libs.versions.toml'
     })
     const wasUpdated = newVersion !== undefined && newVersion !== oldVersion
     core.setOutput('updated', wasUpdated)

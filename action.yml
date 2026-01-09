@@ -31,6 +31,13 @@ inputs:
       returned.
     type: string
     required: false
+  catalog:
+    description:
+      The path to the Gradle version catalog file. Defaults to
+      'gradle/libs.versions.toml'.
+    type: string
+    required: false
+    default: 'gradle/libs.versions.toml'
 
 outputs:
   version:
