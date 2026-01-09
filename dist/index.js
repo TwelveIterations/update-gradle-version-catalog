@@ -28353,7 +28353,10 @@ async function updateCatalogVersion(options) {
     else if (library) {
         let entry = catalog.libraries?.[library];
         if (!entry) {
-            const key = Object.keys(catalog.libraries ?? {}).find((k) => catalog.libraries[k].module === library);
+            const key = Object.keys(catalog.libraries ?? {}).find((k) => {
+                const module = catalog.libraries[k].module;
+                return module === library || module.startsWith(library + ':');
+            });
             if (key)
                 entry = catalog.libraries[key];
         }
